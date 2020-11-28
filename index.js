@@ -1,5 +1,6 @@
 module.exports = {
   script: "serve",
+  name: "covid19",
   env: {
     PM2_SERVE_PATH: '.',
     PM2_SERVE_PORT: 8080,
