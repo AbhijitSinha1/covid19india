@@ -60,8 +60,45 @@
 
 <script>
     const STATES = ["AN", "AP", "AR", "AS", "BR", "CH", "CT", "DL", "DN", "GA", "GJ", "HP", "HR", "JH", "JK", "KA", "KL", "LA", "MH", "ML", "MN", "MP", "MZ", "NL", "OR", "PB", "PY", "RJ", "SK", "TG", "TN", "TR", "UP", "UT", "WB"];
+    const stateNames = {
+        "AN": "Andaman & Nicobar",
+        "AP": "Andhra Pradesh",
+        "AR": "Arunachal Pradesh",
+        "AS": "Assam",
+        "BR": "Bihar",
+        "CH": "Chandigarh",
+        "CT": "Chattisgarh",
+        "DL": "New Delhi",
+        "DN": "Dadra and Nagar Haveli and Daman and Diu",
+        "GA": "Goa",
+        "GJ": "Gujarat",
+        "HP": "Himachal Pradesh",
+        "HR": "Haryana",
+        "JH": "Jharkhand",
+        "JK": "Jammu & Kashmir",
+        "KA": "Karnataka",
+        "KL": "Kerala",
+        "LA": "Ladakh",
+        "MH": "Maharashtra",
+        "ML": "Meghalaya",
+        "MN": "Manipur",
+        "MP": "Madhya Pradesh",
+        "MZ": "Mizoram",
+        "NL": "Naga Land",
+        "OR": "Odisha",
+        "PB": "Punjab",
+        "PY": "Puducherry",
+        "RJ": "Rajasthan",
+        "SK": "Sikkim",
+        "TG": "Telangana",
+        "TN": "Tamil Nadu",
+        "TR": "Tripura",
+        "UP": "Uttar Pradesh",
+        "UT": "Uttarakhand",
+        "WB": "West Bengal"
+    }
 
-    const toTableRow = (state, reported, recovered, deceased, active) => `<tr><td>${state}</td><td>${reported}</td><td>${recovered}</td><td>${deceased}</td><td>${active}</td></tr>`;
+    const toTableRow = (state, reported, recovered, deceased, active) => `<tr><td>${stateNames[state]}</td><td>${reported}</td><td>${recovered}</td><td>${deceased}</td><td>${active}</td></tr>`;
 
     const ONE_DAY = 24 * 3600 * 1000;
     const yesterday = new Date(Date.now() - ONE_DAY);
