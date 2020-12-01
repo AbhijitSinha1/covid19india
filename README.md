@@ -1,3 +1,5 @@
 # covid19india
 
-Click [here](https://covid19.abhijitsinha.tech) for the race graph.
+- [Racegraph](https://covid19.abhijitsinha.tech)
+- [Daily Statewise Data](https://covid19.abhijitsinha.tech/dailyrise.html)
+
