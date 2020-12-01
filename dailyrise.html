@@ -1,7 +1,7 @@
 <html>
 
 <head>
-    <title>COVID statewise daily rise</title>
+    <title id="title">COVID statewise daily rise</title>
 
     <script type="text/javascript" src="./MDB/js/jquery.min.js"></script>
     <script type="text/javascript" src="./MDB/js/addons/datatables.min.js"></script>
@@ -66,6 +66,10 @@
     const ONE_DAY = 24 * 3600 * 1000;
     const yesterday = new Date(Date.now() - ONE_DAY);
     const [dd, mm, yyyy] = [yesterday.getDate(), yesterday.getMonth() + 1, yesterday.getFullYear()];
+
+    document.getElementById("title").innerText = `${dd}-${mm}-${yyyy} COVID statewise daily rise`;
+
+
     const url = `https://api.covid19india.org/v4/data-${yyyy}-${mm}-${dd}.json`;
     fetch(url).then(z => z.json()).then(json => {
 
