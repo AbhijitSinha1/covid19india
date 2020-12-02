@@ -109,8 +109,8 @@
     document.getElementById("title").innerText = `${dd}-${mm}-${yyyy} COVID statewise daily rise`;
 
 
-    const url = `https://api.covid19india.org/v4/data-${yyyy}-${mm.padStart(2, 0)}-${dd.padStart(2, 0)}.json`;
-    const urlDB4 = `https://api.covid19india.org/v4/data-${yyyyDB4}-${mmDB4.padStart(2, 0)}-${ddDB4.padStart(2, 0)}.json`;
+    const url = `https://api.covid19india.org/v4/data-${yyyy}-${mm.toString().padStart(2, 0)}-${dd.toString().padStart(2, 0)}.json`;
+    const urlDB4 = `https://api.covid19india.org/v4/data-${yyyyDB4}-${mmDB4.toString().padStart(2, 0)}-${ddDB4.toString().padStart(2, 0)}.json`;
     fetch(url).catch(() => fetch(urlDB4)).then(z => z.json()).then(json => {
         const html = STATES.map(state => {
             const { confirmed, deceased, recovered } = json[state].delta;
