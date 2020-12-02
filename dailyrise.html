@@ -107,7 +107,7 @@
     document.getElementById("title").innerText = `${dd}-${mm}-${yyyy} COVID statewise daily rise`;
 
 
-    const url = `https://api.covid19india.org/v4/data-${yyyy}-${mm}-${dd}.json`;
+    const url = `https://api.covid19india.org/v4/data.json`;
     fetch(url).then(z => z.json()).then(json => {
 
         const html = STATES.map(state => {
