@@ -21,18 +21,236 @@
             top: calc(50% - 100px);
             position: absolute;
         }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+        input:checked+.slider {
+            background-color: #2196F3;
+        }
+
+        input:focus+.slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+
+        input:checked+.slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+
+        /* Rounded sliders */
+        .slider.round {
+            border-radius: 34px;
+        }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
     </style>
 </head>
 
 <body>
+
+    <label class="switch">
+        <input type="checkbox" checked id="checkbox">
+        <span class="slider round"></span>
+    </label>
+    <span>Per Million Population</span>
+
     <div id="chartdiv" style="display: none;"></div>
     <img src="./loading.gif" id="loading" style="display: block;" />
 </body>
 
 <script>
-    const CATAGORY_X = "active", CATAGORY_Y = "state";
+    const CATAGORY_X = "active", CATAGORY_Y = "state", ONE_MILLION = 1e6;
 
     const STATES = ["AN", "AP", "AR", "AS", "BR", "CH", "CT", "DL", "DN", "GA", "GJ", "HP", "HR", "JH", "JK", "KA", "KL", "LA", "MH", "ML", "MN", "MP", "MZ", "NL", "OR", "PB", "PY", "RJ", "SK", "TG", "TN", "TR", "UP", "UT", "WB"];
+    const META = {
+        "AN": {
+            "population": "397000",
+            "name": "Andaman and Nicobar Islands"
+        },
+        "AP": {
+            "population": "52221000",
+            "name": "Andhra Pradesh"
+        },
+        "AR": {
+            "population": "1504000",
+            "name": "Arunachal Pradesh"
+        },
+        "AS": {
+            "population": "34293000",
+            "name": "Assam"
+        },
+        "BR": {
+            "population": "119520000",
+            "name": "Bihar"
+        },
+        "CH": {
+            "population": "1179000",
+            "name": "Chandigarh"
+        },
+        "CT": {
+            "population": "28724000",
+            "name": "Chhattisgarh"
+        },
+        "DL": {
+            "population": "19814000",
+            "name": "Delhi"
+        },
+        "DN": {
+            "population": "959000",
+            "name": "Dadra and Nagar Haveli and Daman and Diu"
+        },
+        "GA": {
+            "population": "1540000",
+            "name": "Goa"
+        },
+        "GJ": {
+            "population": "67936000",
+            "name": "Gujarat"
+        },
+        "HP": {
+            "population": "7300000",
+            "name": "Himachal Pradesh"
+        },
+        "HR": {
+            "population": "28672000",
+            "name": "Haryana"
+        },
+        "JH": {
+            "population": "37403000",
+            "name": "Jharkhand"
+        },
+        "JK": {
+            "population": "13203000",
+            "name": "Jammu and Kashmir"
+        },
+        "KA": {
+            "population": "65798000",
+            "name": "Karnataka"
+        },
+        "KL": {
+            "population": "35125000",
+            "name": "Kerala"
+        },
+        "LA": {
+            "population": "293000",
+            "name": "Ladakh"
+        },
+        "LD": {
+            "population": "68000",
+            "name": "Lakshadweep"
+        },
+        "MH": {
+            "population": "122153000",
+            "name": "Maharashtra"
+        },
+        "ML": {
+            "population": "3224000",
+            "name": "Meghalaya"
+        },
+        "MN": {
+            "population": "3103000",
+            "name": "Manipur"
+        },
+        "MP": {
+            "population": "82232000",
+            "name": "Madhya Pradesh"
+        },
+        "MZ": {
+            "population": "1192000",
+            "name": "Mizoram"
+        },
+        "NL": {
+            "population": "2150000",
+            "name": "Nagaland"
+        },
+        "OR": {
+            "population": "43671000",
+            "name": "Odisha"
+        },
+        "PB": {
+            "population": "29859000",
+            "name": "Punjab"
+        },
+        "PY": {
+            "population": "1504000",
+            "name": "Puducherry"
+        },
+        "RJ": {
+            "population": "77264000",
+            "name": "Rajasthan"
+        },
+        "SK": {
+            "population": "664000",
+            "name": "Sikkim"
+        },
+        "TG": {
+            "population": "37220000",
+            "name": "Telangana"
+        },
+        "TN": {
+            "population": "75695000",
+            "name": "Tamil Nadu"
+        },
+        "TR": {
+            "population": "3992000",
+            "name": "Tripura"
+        },
+        "TT": {
+            "population": "1332900000",
+            "name": "India"
+        },
+        "UP": {
+            "population": "224979000",
+            "name": "Uttar Pradesh"
+        },
+        "UT": {
+            "population": "11141000",
+            "name": "Uttarakhand"
+        },
+        "WB": {
+            "population": "96906000",
+            "name": "West Bengal"
+        },
+    }
+
 </script>
 
 <script>
@@ -41,11 +259,14 @@
     var chart = am4core.create("chartdiv", am4charts.XYChart);
     chart.padding(40, 40, 40, 40);
 
-    // chart.numberFormatter.bigNumberPrefixes = [
-    //     { "number": 1e+3, "suffix": "K" },
-    //     { "number": 1e+6, "suffix": "M" },
-    //     { "number": 1e+9, "suffix": "B" }
-    // ];
+    const checkbox = document.getElementById("checkbox");
+
+    let perMillionCapita = checkbox.checked;
+
+    checkbox.onchange = (element) => {
+        perMillionCapita = checkbox.checked;
+        console.log("Toggled to ", perMillionCapita);
+    };
 
     fetch("https://api.covid19india.org/v4/data-all.json").then(z => z.json()).then(json => {
 
@@ -166,6 +387,10 @@
             for (var i = 0; i < chart.data.length; i++) {
 
                 chart.data[i][CATAGORY_X] = newData[i][CATAGORY_X];
+                if (perMillionCapita) {
+                    const state = chart.data[i][CATAGORY_Y];
+                    chart.data[i][CATAGORY_X] = chart.data[i][CATAGORY_X] * ONE_MILLION / META[state].population;
+                }
                 if (chart.data[i][CATAGORY_X] > 0) {
                     itemsWithNonZero++;
                 }
