@@ -35,6 +35,7 @@
 
 <body>
     <div class="containter">
+        <p>Data as of: <span id="date"></span></p>
         <table id="tablediv" class="table table-striped table-bordered table-sm" cellspacing="0" width="80%"
             style="display: none;">
             <thead>
@@ -97,21 +98,23 @@
         "UT": "Uttarakhand",
         "WB": "West Bengal"
     }
+    const ONE_DAY = 24 * 3600 * 1000;
 
     const toTableRow = (state, reported, recovered, deceased, active) => `<tr><td>${stateNames[state]}</td><td>${reported}</td><td>${recovered}</td><td>${deceased}</td><td>${active}</td></tr>`;
 
-    const ONE_DAY = 24 * 3600 * 1000;
-    const yesterday = new Date(Date.now() - ONE_DAY);
-    const dayBefore = new Date(Date.now() - 2 * ONE_DAY);
-    const [dd, mm, yyyy] = [yesterday.getDate(), yesterday.getMonth() + 1, yesterday.getFullYear()];
-    const [ddDB4, mmDB4, yyyyDB4] = [dayBefore.getDate(), dayBefore.getMonth() + 1, dayBefore.getFullYear()];
+    const toURL = (date) => {
+        const [dd, mm, yyyy] = [date.getDate(), date.getMonth() + 1, date.getFullYear()];
+        document.getElementById("date").innerText = `${dd}-${mm}-${yyyy}`;
+        document.getElementById("title").innerText = `${dd} -${mm} -${yyyy} COVID statewise daily rise`;
+        return `https://api.covid19india.org/v4/data-${yyyy}-${mm.toString().padStart(2, 0)}-${dd.toString().padStart(2, 0)}.json`;
+    }
 
-    document.getElementById("title").innerText = `${dd}-${mm}-${yyyy} COVID statewise daily rise`;
+    const fetchData = (date) => fetch(toURL(date)).then(z => z.json()).catch(() => fetchData(new Date(new Date(date).getTime() - ONE_DAY)));
 
+    // const url = toURL(yesterday);
+    // const urlDB4 = toURL(dayBefore);
 
-    const url = `https://api.covid19india.org/v4/data-${yyyy}-${mm.toString().padStart(2, 0)}-${dd.toString().padStart(2, 0)}.json`;
-    const urlDB4 = `https://api.covid19india.org/v4/data-${yyyyDB4}-${mmDB4.toString().padStart(2, 0)}-${ddDB4.toString().padStart(2, 0)}.json`;
-    fetch(url).catch(() => fetch(urlDB4)).then(z => z.json()).then(json => {
+    fetchData(new Date()).then(json => {
         const html = STATES.map(state => {
             const { confirmed, deceased, recovered } = json[state].delta;
             const active = +confirmed - (+deceased || 0) - (+recovered || 0);
