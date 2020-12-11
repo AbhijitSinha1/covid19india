@@ -171,25 +171,15 @@
     const ONE_DAY = 24 * 3600 * 1000;
 
     const stateData = {};
-    let prevStates = [STATES[0]];
-    var chart = c3.generate({
-        bindto: '#chart',
-        data: {
-            columns: [
-                [stateNames[prevStates[0]], 1, 2, 3, 4, 5]
-            ]
-        },
-        transition: {
-            duration: 100
-        }
-    });
+    let prevStates = [];
+    let chart = null;
 
     const sb = new snackbar();
 
     const addState = function () {
-        console.log("adding");
+
         const state = document.getElementById("stateSelect").value;
-        console.log("state: ", state);
+
         prevStates.push(state);
 
         chart.load({
@@ -210,6 +200,7 @@
         // chart.unload();
         chart.load({
             columns: [
+                ['x', ...Object.keys(stateData[state])],
                 [stateNames[state], ...Object.values(stateData[state])]
             ],
             unload: prevStates.map(prevState => stateNames[prevState])
@@ -246,15 +237,40 @@
         document.getElementById("tablediv").setAttribute("style", "display: block");
     }).then(() => fetch('https://api.covid19india.org/v4/data-all.json')).then(z => z.json()).then(json => {
         for (const date in json) {
-            for (const state in json[date]) {
+            for (const state of STATES) {
                 if (stateData[state] == undefined) {
                     stateData[state] = {};
                 }
-                if (json[date][state] == undefined || json[date][state].total == undefined) continue;
+                if (json[date][state] == undefined || json[date][state].total == undefined) {
+                    stateData[state][date] = 0;
+                    continue;
+                }
                 const { confirmed, deceased, recovered } = json[date][state].total;
                 stateData[state][date] = (+confirmed || 0) - (+deceased || 0) - (+recovered || 0);
             }
         }
+
+        chart = c3.generate({
+            bindto: '#chart',
+            data: {
+                x: 'x',
+                columns: [
+                    ['x', ...Object.keys(json)],
+                ]
+            },
+            transition: {
+                duration: 100
+            },
+            axis: {
+                x: {
+                    type: 'timeseries',
+                    tick: {
+                        format: '%Y-%m-%d' // format string is also available for timeseries data
+                    }
+                }
+            }
+        });
+
     });
 
 
