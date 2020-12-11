@@ -83,7 +83,45 @@
                     <div id="chart"></div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <select type="text" id="stateSelect">
+                        <option value="AN">Andaman & Nicobar</option>
+                        <option value="AP">Andhra Pradesh</option>
+                        <option value="AR">Arunachal Pradesh</option>
+                        <option value="AS">Assam</option>
+                        <option value="BR">Bihar</option>
+                        <option value="CH">Chandigarh</option>
+                        <option value="CT">Chattisgarh</option>
+                        <option value="DL">New Delhi</option>
+                        <option value="DN">Dadra and Nagar Haveli and Daman and Diu</option>
+                        <option value="GA">Goa</option>
+                        <option value="GJ">Gujarat</option>
+                        <option value="HP">Himachal Pradesh</option>
+                        <option value="HR">Haryana</option>
+                        <option value="JH">Jharkhand</option>
+                        <option value="JK">Jammu & Kashmir</option>
+                        <option value="KA">Karnataka</option>
+                        <option value="KL">Kerala</option>
+                        <option value="LA">Ladakh</option>
+                        <option value="MH">Maharashtra</option>
+                        <option value="ML">Meghalaya</option>
+                        <option value="MN">Manipur</option>
+                        <option value="MP">Madhya Pradesh</option>
+                        <option value="MZ">Mizoram</option>
+                        <option value="NL">Naga Land</option>
+                        <option value="OR">Odisha</option>
+                        <option value="PB">Punjab</option>
+                        <option value="PY">Puducherry</option>
+                        <option value="RJ">Rajasthan</option>
+                        <option value="SK">Sikkim</option>
+                        <option value="TG">Telangana</option>
+                        <option value="TN">Tamil Nadu</option>
+                        <option value="TR">Tripura</option>
+                        <option value="UP">Uttar Pradesh</option>
+                        <option value="UT">Uttarakhand</option>
+                        <option value="WB">West Bengal</option>
+                    </select>
+                    <button type="button" class="btn btn-primary" onclick="addState()">Add</button>
+                    <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
                 </div>
             </div>
 
@@ -133,10 +171,13 @@
     const ONE_DAY = 24 * 3600 * 1000;
 
     const stateData = {};
+    let prevStates = [STATES[0]];
     var chart = c3.generate({
         bindto: '#chart',
         data: {
-            columns: []
+            columns: [
+                [stateNames[prevStates[0]], 1, 2, 3, 4, 5]
+            ]
         },
         transition: {
             duration: 100
@@ -145,19 +186,37 @@
 
     const sb = new snackbar();
 
+    const addState = function () {
+        console.log("adding");
+        const state = document.getElementById("stateSelect").value;
+        console.log("state: ", state);
+        prevStates.push(state);
+
+        chart.load({
+            columns: [
+                [stateNames[state], ...Object.values(stateData[state])]
+            ],
+        });
+        chart.flush();
+
+    }
+
     const active = function (state) {
         if (stateData[state] == undefined) {
             sb.error("Loading Data");
             return;
         }
         sb.info("Please wait");
-        chart.unload();
+        // chart.unload();
         chart.load({
             columns: [
                 [stateNames[state], ...Object.values(stateData[state])]
-            ]
+            ],
+            unload: prevStates.map(prevState => stateNames[prevState])
         });
         chart.flush();
+
+        prevStates = [state];
 
         $('#myModal').modal({ show: true });
     }
